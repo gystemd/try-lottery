@@ -1,3 +1,4 @@
+
 App = {
 
     contracts: {},
@@ -62,13 +63,6 @@ App = {
                 console.log(event);
             });
 
-            instance.winner().on('data', function (event) {
-                $('.toast').toast('show');
-                console.log("Event catched");
-                console.log(event);
-            });
-
-
         });
 
         return App.render();
@@ -76,47 +70,23 @@ App = {
 
 
     render: function () {
+        App.getNFTList();
+    },
 
+    getNFTList: function () {
         App.contracts["Contract"].deployed().then(async (instance) => {
-            const isRoundFinished = await instance.getRoundFinished();
-            if (!isRoundFinished) {
-                const round = await instance.getCurrentBlock();
-                console.log(round);
-                const duration = await instance.getDuration();
-                console.log("duration" + duration);
-                if (round.toNumber() >= duration.toNumber()) {
-
-                    $("#centerBlock").html("<h2>Ready to draw numbers</h2><button id='startRound' type='button' onclick = 'App.drawNumbers()' class= 'btn btn-primary' > DRAW NUMBERS</button > ");
-                }
-                else {
-                    $("#centerBlock").html("<h2>" + round + " out of "
-                        + duration + " rounds passed </h1>");
-                }
+            const descriptions = await instance.getNFTDescription();
+            for (let i = 0; i < descriptions.length; i++) {
+                $("#rowBlock").append(
+                    "<div class='col-md-4'>" +
+                    "<div class='card' style='width: 18rem'>" +
+                    "<div class='card-body'>" +
+                    "<h5 class='card-title'>"+descriptions[i]+"</h5>" +
+                    "<p class='card-text'>" +
+                    "A beautiful NFT with image:" +descriptions[i] +
+                    "</p>" +
+                    "</div></div></div>");
             }
-            else
-                $("#centerBlock").html("<button id='startRound' type='button' onclick='App.startNewRound()' class='btn btn-primary'>START NEW ROUND</button>");
-
-        });
-    },
-
-    // Call a function from a smart contract
-    // The function send an event that triggers a transaction:: Metamask opens to confirm the transaction by the user
-    startNewRound: function () {
-        App.contracts["Contract"].deployed().then(async (instance) => {
-            console.log("round started");
-            await instance.startNewRound({ from: App.account });
-            App.render();
-        });
-    },
-    drawNumbers: function () {
-        App.contracts["Contract"].deployed().then(async (instance) => {
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawPowerBall({ from: App.account });
-            await instance.givePrizes({ from: App.account });
         });
     }
 

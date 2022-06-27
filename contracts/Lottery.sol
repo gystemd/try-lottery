@@ -48,12 +48,14 @@ contract Lottery {
         isLotteryDeactivated = false;
         isRoundFinished = true;
         //
-        for (uint256 i = 0; i < 8; i++) {
-            //minting 11 NFTs
-            //concat "NFT" with i to create the tokenID
-            uint256 token_id = mint("NFT", i);
-            classes[i].push(token_id);
-        }
+        classes[0] = mint("NFT 1", 1);
+        classes[1] = mint("NFT 2", 2);
+        classes[2] = mint("NFT 3", 3);
+        classes[3] = mint("NFT 4", 4);
+        classes[4] = mint("NFT 5", 5);
+        classes[5] = mint("NFT 6", 6);
+        classes[6] = mint("NFT 7", 7);
+        classes[7] = mint("NFT 8", 8);
     }
 
     function startNewRound() public {
@@ -227,15 +229,13 @@ contract Lottery {
     }
 
     function awardItem(uint256 classNumber, address winner) private {
-        if (classes[classNumber].length == 0) {
+        if (classes[classNumber] == 0) {
             //prizes for that class are finished, need to generate a new one
             uint256 tokenId = nft.mint(winner, "NewNFT", classNumber);
             emit Winner(winner, tokenId);
         } else {
-            uint256 tokenId = (classes[classNumber])[
-                classes[classNumber].length - 1
-            ];
-            classes[classNumber].pop();
+            uint256 tokenId = (classes[classNumber]);
+            classes[classNumber] = 0;
             nft.transferFrom(address(this), winner, tokenId);
             emit Winner(winner, tokenId);
         }
@@ -309,10 +309,10 @@ contract Lottery {
         return extractedNumbers;
     }
 
-    function getNFTs() public view returns (string[] memory) {
-        string[] memory descriptions_;
+    function getNFTDescription() public view returns (string[] memory) {
+        string[] memory descriptions_ = new string[](8);
         for (uint256 i = 0; i < 8; i++) {
-            string memory a = nft.getDescription(classes[i][0]);
+            string memory a = nft.getDescription(classes[i]);
             descriptions_[i] = a;
         }
         return descriptions_;

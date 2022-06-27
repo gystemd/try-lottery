@@ -10,8 +10,8 @@
   </head>
   <body style="background: linear-gradient(to right, #dd5e89, #f7bb97)">
     <!-- Image and text -->
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd88;">
-      <a class="navbar-brand" href="nft.html">TRY</a>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd88">
+      <a class="navbar-brand" href="index.html">TRY</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -38,7 +38,7 @@
       </div>
     </nav>
 
-    <div style="position: absolute; bottom: 50; right: 50">
+    <div style="position: absolute; bottom: 50; right:50">
       <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false">
         <div class="toast-header">
           <img src="/src/assets/TRY.png" class="rounded mr-2" alt="..." />
@@ -52,9 +52,8 @@
     </div>
 
     <div class="container">
-      <div class="row h-100">
-        <div id="centerBlock" class="col-sm-12 my-auto d-flex justify-content-center"></div>
-      </div>
+      <div class="row d-flex justify-content-center pb-3"><h2>List of prizes</h2></div>
+      <div id="rowBlock" class="row"></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -71,7 +70,7 @@
     ></script>
     <script src="./dist/web3.min.js"></script>
     <script src="./dist/truffle-contract.js"></script>
+    <script src="./js/nft.js"></script>
     <!-- App -->
-    <script src="./js/app.js"></script>
   </body>
 </html>
