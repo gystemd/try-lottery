@@ -2,10 +2,24 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 interface NFT {
-    function mint(address addr, string memory description,uint class) external returns (uint256);
-    function transferFrom(address from, address to, uint256 tokenId) external;
-    function getDescription(uint256 tokenId) external view returns (string memory);
+    function mint(
+        address addr,
+        string memory description,
+        uint class
+    ) external returns (uint256);
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) external;
+
+    function getDescription(uint256 tokenId)
+        external
+        view
+        returns (string memory);
 }
+
 contract Lottery {
     NFT public nft;
 
@@ -43,8 +57,13 @@ contract Lottery {
     uint256[] public extractedNumbers;
     uint256[] classesAssign = [0, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7]; //used to assign classes randomly
 
-    constructor(uint256 _price, uint256 _duration, address nft_address) public {
-        operator = msg.sender;
+    constructor(
+        uint256 _price,
+        uint256 _duration,
+        address nft_address,
+        address operator_
+    ) public {
+        operator = operator_;
         nft = NFT(nft_address);
         duration = _duration;
         price = _price;
@@ -119,7 +138,6 @@ contract Lottery {
         returns (uint256)
     {
         require(!isLotteryDeactivated, "Lottery has been cancelled");
-        require(msg.sender == operator, "Only the operator can mint new Items");
 
         uint256 tokenId_ = nft.mint(address(this), description, rank_);
         return tokenId_;

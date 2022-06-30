@@ -4,7 +4,7 @@ App = {
     web3Provider: null,             // Web3 provider
     url: 'http://localhost:8545',   // Url for web3
     account: '0x0',                 // current ethereum account
-
+    lotteryAddress: '0x0',
     init: function () {
         console.log("init");
         return App.initWeb3();
@@ -12,8 +12,6 @@ App = {
 
     /* initialize Web3 */
     initWeb3: function () {
-        console.log("Entered")
-
         if (typeof web3 != 'undefined') {
             App.web3Provider = window.ethereum;
             web3 = new Web3(App.web3Provider);
@@ -43,7 +41,7 @@ App = {
 
     },
     /* Upload the contract's abstractions */
-    initContract: function () {
+    initContract: async function () {
 
         // Get current account
         web3.eth.getCoinbase(function (err, account) {
@@ -54,17 +52,24 @@ App = {
         });
 
         // Load content's abstractions
-        $.getJSON("Lottery.json").done(function (c) {
-            App.contracts["Contract"] = TruffleContract(c);
-            App.contracts["Contract"].setProvider(App.web3Provider);
+        $.getJSON("LotteryFactory.json").done(async function (c) {
+            App.contracts["LotteryFactory"] = TruffleContract(c);
+            App.contracts["LotteryFactory"].setProvider(App.web3Provider);
 
-            return App.listenForEvents();
+            App.contracts["LotteryFactory"].deployed().then(async (instance) => {
+                App.lotteryAddress = await instance.getLotteryAddress();
+                let jsonLottery = await $.getJSON("Lottery.json");
+                App.contracts["Lottery"] = await TruffleContract(jsonLottery);
+                App.contracts["Lottery"].setProvider(App.web3Provider);
+                        return App.listenForEvents();
+            });
         });
+
     },
 
     // Write an event listener
     listenForEvents: function () {
-        App.contracts["Contract"].deployed().then(async (instance) => {
+        App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             instance.RoundStarted().on('data', function (event) {
                 $('.toast').toast('show');
                 console.log("Event catched");
@@ -85,7 +90,8 @@ App = {
     // Call a function from a smart contract
     // The function send an event that triggers a transaction:: Metamask opens to confirm the transaction by the user
     getExtractedNumbers: function () {
-        App.contracts["Contract"].deployed().then(async (instance) => {
+        console.log(App.contracts);
+        App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             const extractedNumbers = await instance.getExtractedNumbers({ from: App.account, gas: 3000000 });
             console.log(extractedNumbers);
             $("#centerBlock").html("<h2>Extracted numbers: " + extractedNumbers + "</h2>");
