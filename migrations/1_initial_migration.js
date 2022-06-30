@@ -1,7 +1,9 @@
 const Migrations = artifacts.require("Migrations");
 const Contract = artifacts.require("Lottery");
 const Factory = artifacts.require("LotteryFactory");
-module.exports = function (deployer,network,accounts) {
-  deployer.deploy(Migrations);
-  deployer.deploy(Factory);
+const NFT = artifacts.require("NFT");
+module.exports = async function (deployer,network,accounts) {
+  let address = await deployer.deploy(NFT);
+  await deployer.deploy(Migrations);
+  await deployer.deploy(Factory, NFT.address);
 }
