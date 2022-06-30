@@ -62,8 +62,8 @@ App = {
                 console.log(event);
             });
 
-            instance.winner().on('data', function (event) {
-                $('.toast').toast('show');
+            instance.Winner().on('data', function (event) {
+
                 console.log("Event catched");
                 console.log(event);
             });
@@ -110,14 +110,9 @@ App = {
     },
     drawNumbers: function () {
         App.contracts["Contract"].deployed().then(async (instance) => {
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawNumber({ from: App.account });
-            await instance.drawPowerBall({ from: App.account });
-            await instance.givePrizes({ from: App.account });
+            await instance.drawNumbers({ from: App.account });
         });
+
     }
 
 }

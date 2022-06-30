@@ -1,7 +1,7 @@
 const Migrations = artifacts.require("Migrations");
 const Contract = artifacts.require("Lottery");
-
-module.exports = function (deployer) {
+const Factory = artifacts.require("LotteryFactory");
+module.exports = function (deployer,network,accounts) {
   deployer.deploy(Migrations);
-  deployer.deploy(Contract,1000,5);
+  deployer.deploy(Factory);
 }

@@ -75,7 +75,8 @@ App = {
 
     getNFTList: function () {
         App.contracts["Contract"].deployed().then(async (instance) => {
-            const descriptions = await instance.getNFTDescription();
+            const descriptions = await instance.getNFTwon({from: App.account});
+            console.log(descriptions);
             for (let i = 0; i < descriptions.length; i++) {
                 $("#rowBlock").append(
                     "<div class='col-md-4'>" +

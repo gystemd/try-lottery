@@ -25,6 +25,7 @@ contract Lottery {
     //used to map an nft to a class of the lottery
     mapping(uint256 => uint256) private classes;
     mapping(address => Ticket[]) private ticket_map;
+    mapping(address => uint256[]) public nft_map;
 
     bool private isRoundFinished;
     bool private isLotteryDeactivated;
@@ -121,42 +122,39 @@ contract Lottery {
         return tokenId_;
     }
 
-    function drawNumber() public returns (uint256) {
+    function drawNumbers() public {
         require(!isLotteryDeactivated, "Lottery has been cancelled");
         require(
             msg.sender == operator,
             "Only the operator can draw the numbers"
         );
-        require(extractedNumbers.length < 5, "All numbers already extracted");
-
-        uint256 seed = generateSeed();
-        uint256 number = (seed - ((seed / 69) * 69));
-
-        //check whether number has already been extracted
-        for (uint256 i = 0; i < extractedNumbers.length; i++) {
-            require(number != extractedNumbers[i], "number already extracted");
+        require(
+            block.number - initialBlock > duration,
+            "too early to draw numbers"
+        );
+        bool[69] memory picked;
+        for (uint256 i = 0; i < 69; i++) picked[i] = false;
+        uint256 extractedNumber;
+        bytes32 bhash = blockhash(block.number - 1);
+        bytes memory bytesArray = new bytes(32);
+        bytes32 rand;
+        for (uint256 j = 0; j < 5; j++) {
+            for (uint256 i = 0; i < 32; i++) bytesArray[i] = bhash[i];
+            rand = keccak256(bytesArray);
+            // generate random
+            extractedNumber = (uint256(rand) % 69) + 1;
+            if (!picked[extractedNumber - 1]) {
+                // Not already extracted, this is a winning number
+                extractedNumbers.push(extractedNumber);
+                picked[extractedNumber - 1] = true;
+            } else {
+                // number already extracted. Retry.
+                j -= 1;
+            }
+            bhash = bhash ^ rand; // xor to generate another random value
         }
-
-        emit NumberExtracted(number);
-
-        extractedNumbers.push(number);
-        return number;
-    }
-
-    function drawPowerBall() public returns (uint256) {
-        require(!isLotteryDeactivated, "Lottery has been cancelled");
-        require(
-            msg.sender == operator,
-            "Only the operator can draw the numbers"
-        );
-        require(extractedNumbers.length == 5, "Numbers yet to be extracted");
-        require(extractedPowerBall == 0, "Powerball already extracted");
-
-        uint256 seed = generateSeed();
-        uint256 number = (seed - ((seed / 26) * 26));
-        extractedPowerBall = number;
-        emit NumberExtracted(extractedPowerBall);
-        return extractedPowerBall;
+        extractedNumbers.push((uint256(rand) % 26) + 1); //powerball
+        givePrizes();
     }
 
     function givePrizes() public {
@@ -166,8 +164,7 @@ contract Lottery {
             msg.sender == operator,
             "Only the operator can give the prizes"
         );
-        require(extractedNumbers.length == 5, "Numbers not extracted yet");
-        require(extractedPowerBall != 0, "PowerBall not extracted yet");
+        require(extractedNumbers.length == 6, "Numbers not extracted yet");
 
         checkNumbers();
         for (uint256 i = 0; i < participants.length; i++) {
@@ -232,9 +229,11 @@ contract Lottery {
         if (classes[classNumber] == 0) {
             //prizes for that class are finished, need to generate a new one
             uint256 tokenId = nft.mint(winner, "NewNFT", classNumber);
+            nft_map[winner].push(tokenId);
             emit Winner(winner, tokenId);
         } else {
-            uint256 tokenId = (classes[classNumber]);
+            uint256 tokenId = classes[classNumber];
+            nft_map[winner].push(tokenId);
             classes[classNumber] = 0;
             nft.transferFrom(address(this), winner, tokenId);
             emit Winner(winner, tokenId);
@@ -257,30 +256,10 @@ contract Lottery {
                     }
                 }
                 Tickets[j].powerBallMatch = (Tickets[j].numbers[5] ==
-                    extractedPowerBall);
+                    extractedNumbers[5]);
                 Tickets[j].winningNumbers = winningNumbers;
             }
         }
-    }
-
-    function generateSeed() private returns (uint256) {
-        uint256 seed = uint256(
-            keccak256(
-                abi.encodePacked(
-                    block.timestamp +
-                        block.difficulty +
-                        ((
-                            uint256(keccak256(abi.encodePacked(block.coinbase)))
-                        ) / (block.timestamp)) +
-                        block.gaslimit +
-                        ((uint256(keccak256(abi.encodePacked(msg.sender)))) /
-                            (block.timestamp)) +
-                        block.number
-                )
-            )
-        );
-
-        return seed;
     }
 
     function getTickets() public view returns (Ticket[] memory) {
@@ -316,5 +295,21 @@ contract Lottery {
             descriptions_[i] = a;
         }
         return descriptions_;
+    }
+
+    function getNFTwon() public view returns (string[] memory) {
+        string[] memory descriptions_ = new string[](
+            nft_map[msg.sender].length
+        );
+        uint256[] memory nft_list = nft_map[msg.sender];
+        for (uint256 i = 0; i < nft_list.length; i++) {
+            string memory a = nft.getDescription(nft_list[i]);
+            descriptions_[i] = a;
+        }
+        return descriptions_;
+    }
+
+    function getTokenIds() public view returns (uint256[] memory) {
+        return nft_map[msg.sender];
     }
 }

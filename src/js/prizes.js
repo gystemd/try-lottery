@@ -1,3 +1,4 @@
+
 App = {
 
     contracts: {},
@@ -33,15 +34,6 @@ App = {
         return App.initContract();
     },
 
-    deploy: function () {
-
-        $.getJSON("Lottery.json").done(async function (c) {
-            const myContract = TruffleContract(c);
-            myContract.setProvider(App.web3Provider);
-            const instance = await myContract.new(1000,15,{ from: '0x5Ef1E235467aF016126F876d4f9A9012f651aD56', data:c.bytecode, gas: '30000000' });
-        });
-
-    },
     /* Upload the contract's abstractions */
     initContract: function () {
 
@@ -78,17 +70,23 @@ App = {
 
 
     render: function () {
-
-        App.getExtractedNumbers();
+        App.getNFTList();
     },
 
-    // Call a function from a smart contract
-    // The function send an event that triggers a transaction:: Metamask opens to confirm the transaction by the user
-    getExtractedNumbers: function () {
+    getNFTList: function () {
         App.contracts["Contract"].deployed().then(async (instance) => {
-            const extractedNumbers = await instance.getExtractedNumbers({ from: App.account, gas: 3000000 });
-            console.log(extractedNumbers);
-            $("#centerBlock").html("<h2>Extracted numbers: " + extractedNumbers + "</h2>");
+            const descriptions = await instance.getNFTDescription();
+            for (let i = 0; i < descriptions.length; i++) {
+                $("#rowBlock").append(
+                    "<div class='col-md-4'>" +
+                    "<div class='card' style='width: 18rem'>" +
+                    "<div class='card-body'>" +
+                    "<h5 class='card-title'>"+descriptions[i]+"</h5>" +
+                    "<p class='card-text'>" +
+                    "A beautiful NFT with image:" +descriptions[i] +
+                    "</p>" +
+                    "</div></div></div>");
+            }
         });
     }
 
