@@ -119,7 +119,6 @@ App = {
     // The function send an event that triggers a transaction:: Metamask opens to confirm the transaction by the user
     startNewRound: function () {
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
-            console.log("round started");
             await instance.startNewRound({ from: App.account });
             App.render();
         });

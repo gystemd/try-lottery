@@ -118,8 +118,8 @@ App = {
             ];
 
             try {
-
-                await instance.buy(numbers, { from: App.account, value: 1000 });
+                let price = await instance.price();
+                await instance.buy(numbers, { from: App.account, value: price});
             } catch (error) {
                 string = error.toString();
                 result = null;

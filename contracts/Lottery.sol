@@ -156,6 +156,7 @@ contract Lottery {
             block.number - initialBlock > duration,
             "too early to draw numbers"
         );
+        require(isRoundStarted, "The round is not started yet");
         bool[69] memory picked;
         for (uint256 i = 0; i < 69; i++) picked[i] = false;
         uint256 extractedNumber;
@@ -182,7 +183,7 @@ contract Lottery {
         givePrizes();
     }
 
-    function givePrizes() public {
+    function givePrizes() private {
         require(!isLotteryDeactivated, "Lottery has been cancelled");
         require(isRoundStarted, "Round finished");
         require(
@@ -239,7 +240,7 @@ contract Lottery {
         recipient.send(address(this).balance);
     }
 
-    function closeLottery() public {
+    function closeLottery() private {
         require(!isLotteryDeactivated);
         require(msg.sender == operator);
         isLotteryDeactivated = true;
@@ -265,7 +266,7 @@ contract Lottery {
         }
     }
 
-    function checkNumbers() public {
+    function checkNumbers() private {
         /*this function compare every number of a ticket against the extracted numbers
         and increment winningNumbers, which will be used later to know which prize it
         has to assing to the ticket (and therefore to the address of that ticket) */
