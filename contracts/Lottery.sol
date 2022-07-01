@@ -36,8 +36,7 @@ contract Lottery {
 
     event RoundStarted();
     event Winner(address winner, uint256 id);
-    event NumberExtracted(uint256 number);
-    event NFTAssigned(uint256 tokenID, uint256 class);
+    event ExtractedNumbers(uint[6] _numbers);
 
     //used to map an nft to a class of the lottery
     mapping(uint256 => uint256) private classes;
@@ -52,10 +51,9 @@ contract Lottery {
     uint256 public price;
     uint256 public extractedPowerBall;
 
-    Ticket[] private tickets;
+
     address[] private participants;
-    uint256[] public extractedNumbers;
-    uint256[] classesAssign = [0, 1, 2, 3, 3, 4, 4, 5, 5, 6, 7]; //used to assign classes randomly
+    uint256[6] public extractedNumbers;
 
     constructor(
         uint256 _price,
@@ -91,6 +89,11 @@ contract Lottery {
 
         isRoundFinished = false;
         initialBlock = block.number;
+        for(uint256 i = 0; i < participants.length; i++){
+            delete ticket_map[participants[i]];
+        }
+        delete participants;
+        delete extractedNumbers;
         emit RoundStarted();
     }
 
@@ -131,7 +134,6 @@ contract Lottery {
         }
 
         ticket_map[msg.sender].push(ticket);
-        tickets.push(ticket);
     }
 
     function mint(string memory description, uint256 rank_)
@@ -167,7 +169,7 @@ contract Lottery {
             extractedNumber = (uint256(rand) % 69) + 1;
             if (!picked[extractedNumber - 1]) {
                 // Not already extracted, this is a winning number
-                extractedNumbers.push(extractedNumber);
+                extractedNumbers[j]=extractedNumber;
                 picked[extractedNumber - 1] = true;
             } else {
                 // number already extracted. Retry.
@@ -175,7 +177,8 @@ contract Lottery {
             }
             bhash = bhash ^ rand; // xor to generate another random value
         }
-        extractedNumbers.push((uint256(rand) % 26) + 1); //powerball
+        extractedNumbers[5]=(uint256(rand) % 26) + 1; //powerball
+        emit ExtractedNumbers(extractedNumbers);
         givePrizes();
     }
 
@@ -242,9 +245,9 @@ contract Lottery {
         isLotteryDeactivated = true;
 
         //refund all the tickets
-        for (uint256 i = 0; i < tickets.length; i++) {
-            tickets[i].buyer.send(price);
-        }
+        //for (uint256 i = 0; i < tickets.length; i++) {
+        //    tickets[i].buyer.send(price);
+        //}
     }
 
     function awardItem(uint256 classNumber, address winner) private {
@@ -306,7 +309,7 @@ contract Lottery {
         return duration;
     }
 
-    function getExtractedNumbers() public view returns (uint256[] memory) {
+    function getExtractedNumbers() public view returns (uint256[6] memory) {
         return extractedNumbers;
     }
 

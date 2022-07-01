@@ -10,8 +10,8 @@
   </head>
   <body style="background: linear-gradient(to right, #dd5e89, #f7bb97)">
     <!-- Image and text -->
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd88;">
-      <a class="navbar-brand" href="nft.html">TRY</a>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd88">
+      <a class="navbar-brand" href="index.html">TRY</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -37,7 +37,6 @@
           <li class="nav-item">
             <a class="nav-link" href="nft.html">NFTs</a>
           </li>
-
         </ul>
       </div>
     </nav>
@@ -51,6 +50,44 @@
           </button>
         </div>
         <div class="toast-body">A new round of the lottery has begun!</div>
+      </div>
+    </div>
+
+    <div style="position: absolute; bottom: 50; right: 50">
+      <div
+        id="extractedNumbersToast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        class="toast"
+        data-autohide="false"
+      >
+        <div class="toast-header">
+          <strong class="mr-auto">Numbers Extracted!</strong>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="extractedNumbers" class="toast-body"></div>
+      </div>
+    </div>
+
+    <div style="position: absolute; bottom: 50; right: 50">
+      <div
+        id="winnerToast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        class="toast"
+        data-autohide="false"
+      >
+        <div class="toast-header">
+          <strong class="mr-auto">Winner!</strong>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">You won an NFT!!!</div>
       </div>
     </div>
 

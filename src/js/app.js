@@ -76,7 +76,15 @@ App = {
                 console.log("Event catched");
                 console.log(event);
             });
+            instance.ExtractedNumbers().on('data', function (event) {
 
+                $('#extractedNumbers').html(event.returnValues._numbers.toString());
+                $('#extractedNumbersToast').toast('show');
+            });
+
+            instance.Winner().on('data', function (event) {
+                console.log(event);
+            });
         });
 
         return App.render();
@@ -120,6 +128,7 @@ App = {
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             await instance.drawNumbers({ from: App.account });
         });
+        App.render();
 
     }
 }
