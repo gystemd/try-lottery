@@ -94,11 +94,11 @@ App = {
     render: function () {
 
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
-            const isRoundFinished = await instance.getRoundFinished();
-            if (!isRoundFinished) {
+            const isRoundStarted = await instance.isRoundStarted();
+            if (isRoundStarted) {
                 const round = await instance.getCurrentBlock();
                 console.log(round);
-                const duration = await instance.getDuration();
+                const duration = await instance.duration();
                 console.log("duration" + duration);
                 if (round.toNumber() >= duration.toNumber()) {
 

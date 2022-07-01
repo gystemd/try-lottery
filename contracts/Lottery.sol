@@ -43,8 +43,8 @@ contract Lottery {
     mapping(address => Ticket[]) private ticket_map;
     mapping(address => uint256[]) public nft_map;
 
-    bool private isRoundFinished;
-    bool private isLotteryDeactivated;
+    bool public isRoundStarted;
+    bool public isLotteryDeactivated;
 
     uint256 private initialBlock;
     uint256 public duration;
@@ -67,7 +67,7 @@ contract Lottery {
         price = _price;
         extractedPowerBall = 0;
         isLotteryDeactivated = false;
-        isRoundFinished = true;
+        isRoundStarted = false;
         //
         classes[0] = mint("NFT 1", 1);
         classes[1] = mint("NFT 2", 2);
@@ -85,9 +85,9 @@ contract Lottery {
             msg.sender == operator,
             "Only the operator can start a new round"
         );
-        require(isRoundFinished, "The previous round is not finished yet");
+        require(!isRoundStarted, "The previous round is not finished yet");
 
-        isRoundFinished = false;
+        isRoundStarted = true;
         initialBlock = block.number;
         for(uint256 i = 0; i < participants.length; i++){
             delete ticket_map[participants[i]];
@@ -102,7 +102,7 @@ contract Lottery {
         require(block.number - initialBlock <= duration, "Round not active");
         require(numbers.length == 6, "Invalid number of numbers");
         require(msg.value >= price, "Invalid price");
-        require(!isRoundFinished, "The round is not started yet");
+        require(isRoundStarted, "The round is not started yet");
 
         for (uint256 i = 0; i < 5; i++) {
             require(
@@ -184,7 +184,7 @@ contract Lottery {
 
     function givePrizes() public {
         require(!isLotteryDeactivated, "Lottery has been cancelled");
-        require(!isRoundFinished, "Round finished");
+        require(isRoundStarted, "Round finished");
         require(
             msg.sender == operator,
             "Only the operator can give the prizes"
@@ -235,7 +235,7 @@ contract Lottery {
                 }
             }
         }
-        isRoundFinished = true;
+        isRoundStarted = false;
         recipient.send(address(this).balance);
     }
 
@@ -291,26 +291,10 @@ contract Lottery {
         return ticket_map[msg.sender];
     }
 
-    function getPrice() public view returns (uint256) {
-        return price;
-    }
-
-    function getRoundFinished() public view returns (bool) {
-        return isRoundFinished;
-    }
-
     function getCurrentBlock() public view returns (uint256) {
         uint256 current = block.number - initialBlock;
         if (current > 0) return current;
         return 0;
-    }
-
-    function getDuration() public view returns (uint256) {
-        return duration;
-    }
-
-    function getExtractedNumbers() public view returns (uint256[6] memory) {
-        return extractedNumbers;
     }
 
     function getNFTDescription() public view returns (string[] memory) {
@@ -334,7 +318,8 @@ contract Lottery {
         return descriptions_;
     }
 
-    function getTokenIds() public view returns (uint256[] memory) {
-        return nft_map[msg.sender];
+    function getExtractedNumbers() public view returns (uint256[6] memory) {
+        return extractedNumbers;
     }
+
 }
