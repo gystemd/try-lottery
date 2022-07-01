@@ -99,6 +99,7 @@ contract Lottery {
         require(block.number - initialBlock <= duration, "Round not active");
         require(numbers.length == 6, "Invalid number of numbers");
         require(msg.value >= price, "Invalid price");
+        require(!isRoundFinished, "The round is not started yet");
 
         for (uint256 i = 0; i < 5; i++) {
             require(

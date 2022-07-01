@@ -36,7 +36,7 @@ App = {
         $.getJSON("Lottery.json").done(async function (c) {
             const myContract = TruffleContract(c);
             myContract.setProvider(App.web3Provider);
-            const instance = await myContract.new(1000,15,{ from: '0x5Ef1E235467aF016126F876d4f9A9012f651aD56', data:c.bytecode, gas: '30000000' });
+            const instance = await myContract.new(1000, 15, { from: '0x5Ef1E235467aF016126F876d4f9A9012f651aD56', data: c.bytecode, gas: '30000000' });
         });
 
     },
@@ -61,7 +61,7 @@ App = {
                 let jsonLottery = await $.getJSON("Lottery.json");
                 App.contracts["Lottery"] = await TruffleContract(jsonLottery);
                 App.contracts["Lottery"].setProvider(App.web3Provider);
-                        return App.listenForEvents();
+                return App.listenForEvents();
             });
         });
 
@@ -93,8 +93,12 @@ App = {
         console.log(App.contracts);
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             const extractedNumbers = await instance.getExtractedNumbers({ from: App.account, gas: 3000000 });
-            console.log(extractedNumbers);
-            $("#centerBlock").html("<h2>Extracted numbers: " + extractedNumbers + "</h2>");
+            if (extractedNumbers.length > 0) {
+                $("#centerBlock").html("<h2>Extracted numbers: " + extractedNumbers + "</h2>");
+            }
+            else {
+                $("#centerBlock").html("<h2>No extracted numbers</h2>");
+            }
         });
     }
 

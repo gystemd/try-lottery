@@ -28,7 +28,7 @@ App = {
             App.web3Provider = new Web3.providers.HttpProvider(App.url); // <==
             web3 = new Web3(App.web3Provider);
         }
-
+        web3.eth.handleRevert = true
         return App.initContract();
     },
 
@@ -117,7 +117,21 @@ App = {
                 document.getElementById('n6').value
             ];
 
-            await instance.buy(numbers, { from: App.account, value: 1000 });
+            try {
+
+                await instance.buy(numbers, { from: App.account, value: 1000 });
+            } catch (error) {
+                string = error.toString();
+                result = null;
+                if (string.includes("The round is not started yet")) {
+                    result = "The round is not started yet";
+                }
+                else if (string.includes("Round not active")) {
+                    result = "The round is not active";
+                }
+                $("#failBuy").html(result);
+                $("#failBuy").show();
+            }
             App.render();
         });
     }
