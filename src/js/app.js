@@ -102,7 +102,7 @@ App = {
                 console.log("duration" + duration);
                 if (round.toNumber() >= duration.toNumber()) {
 
-                    $("#centerBlock").html("<h2>Ready to draw numbers</h2><button id='startRound' type='button' onclick = 'App.drawNumbers()' class= 'btn btn-primary' > DRAW NUMBERS</button > ");
+                    $("#centerBlock").html("<button id='startRound' type='button' onclick = 'App.drawNumbers()' class= 'btn btn-primary' > DRAW NUMBERS</button > ");
                 }
                 else {
                     $("#centerBlock").html("<h2>" + round + " out of "
@@ -130,6 +130,14 @@ App = {
         });
         App.render();
 
+    },
+    createNewLottery: function () {
+        App.contracts["LotteryFactory"].deployed().then(async (instance) => {
+            let rounds = $("#rounds").val();
+            let price = $("#price").val();
+            await instance.createLottery(price,rounds,{ from: App.account });
+        });
+        //reload page
     }
 }
 
