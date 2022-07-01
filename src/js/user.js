@@ -96,7 +96,7 @@ App = {
                 list += '</ul>';
                 $("#tickets").append(list);
 
-                const price = await instance.getPrice();
+                const price = await instance.price();
                 console.log("price " + price);
             }
 
