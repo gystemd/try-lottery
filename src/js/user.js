@@ -129,6 +129,9 @@ App = {
                 else if (string.includes("Round not active")) {
                     result = "The round is not active";
                 }
+                else if (string.includes("Lottery has been cancelled")) {
+                    result = "The lottery has been cancelled";
+                }
                 $("#failBuy").html(result);
                 $("#failBuy").show();
             }

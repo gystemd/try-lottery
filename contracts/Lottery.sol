@@ -246,15 +246,18 @@ contract Lottery {
         recipient.send(address(this).balance);
     }
 
-    function closeLottery() private {
+    function closeLottery() public {
         require(!isLotteryDeactivated);
         require(msg.sender == operator);
         isLotteryDeactivated = true;
 
         //refund all the tickets
-        //for (uint256 i = 0; i < tickets.length; i++) {
-        //    tickets[i].buyer.send(price);
-        //}
+        for (uint256 i = 0; i < participants.length; i++) {
+            Ticket[] memory tickets = ticket_map[participants[i]];
+            for (uint256 j = 0; j < tickets.length; j++) {
+                tickets[i].buyer.send(price);
+            }
+        }
     }
 
     function awardItem(uint256 classNumber, address winner) private {

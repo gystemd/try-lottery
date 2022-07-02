@@ -58,6 +58,7 @@ App = {
             App.contracts["LotteryFactory"].setProvider(App.web3Provider);
 
             App.contracts["LotteryFactory"].deployed().then(async (instance) => {
+                //event for when a new lottery is created
                 instance.LotteryCreated().on('data', function (event) {
                     $("#newLotteryToast").toast('show');
                 });
@@ -72,14 +73,15 @@ App = {
 
     },
 
-    // Write an event listener
+
     listenForEvents: function () {
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
+            //show notifications with toasts
             instance.RoundStarted().on('data', function (event) {
                 $("#newRoundToast").toast('show');
             });
-            instance.ExtractedNumbers().on('data', function (event) {
 
+            instance.ExtractedNumbers().on('data', function (event) {
                 $('#extractedNumbers').html(event.returnValues._numbers.toString());
                 $('#extractedNumbersToast').toast('show');
             });
@@ -97,11 +99,14 @@ App = {
 
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             const isRoundStarted = await instance.isRoundStarted();
-            if (isRoundStarted) {
+            let isLotteryDeactivated = await instance.isLotteryDeactivated();
+            if (isLotteryDeactivated) {
+                $("#centerBlock").html("<h1>Lottery is deactivated</h1>");
+                $("#closeLottery").hide();
+            }
+            else if (isRoundStarted) {
                 const round = await instance.getCurrentBlock();
-                console.log(round);
                 const duration = await instance.duration();
-                console.log("duration" + duration);
                 if (round.toNumber() >= duration.toNumber()) {
 
                     $("#centerBlock").html("<button id='startRound' type='button' onclick = 'App.drawNumbers()' class= 'btn btn-primary' > DRAW NUMBERS</button > ");
@@ -138,7 +143,12 @@ App = {
             let price = $("#price").val();
             await instance.createLottery(price, rounds, { from: App.account });
         });
-        //reload page
+    },
+
+    closeLottery: function () {
+        App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
+            await instance.closeLottery({ from: App.account });
+        });
     }
 }
 
