@@ -58,6 +58,10 @@ App = {
             App.contracts["LotteryFactory"].setProvider(App.web3Provider);
 
             App.contracts["LotteryFactory"].deployed().then(async (instance) => {
+                instance.LotteryCreated().on('data', function (event) {
+                    $("#newLotteryToast").toast('show');
+                });
+
                 App.lotteryAddress = await instance.getLotteryAddress();
                 let jsonLottery = await $.getJSON("Lottery.json");
                 App.contracts["Lottery"] = await TruffleContract(jsonLottery);
@@ -72,9 +76,7 @@ App = {
     listenForEvents: function () {
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             instance.RoundStarted().on('data', function (event) {
-                $('.toast').toast('show');
-                console.log("Event catched");
-                console.log(event);
+                $("#newRoundToast").toast('show');
             });
             instance.ExtractedNumbers().on('data', function (event) {
 
@@ -134,7 +136,7 @@ App = {
         App.contracts["LotteryFactory"].deployed().then(async (instance) => {
             let rounds = $("#rounds").val();
             let price = $("#price").val();
-            await instance.createLottery(price,rounds,{ from: App.account });
+            await instance.createLottery(price, rounds, { from: App.account });
         });
         //reload page
     }
