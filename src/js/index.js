@@ -93,11 +93,11 @@ App = {
         console.log(App.contracts);
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
             const extractedNumbers = await instance.getExtractedNumbers({ from: App.account, gas: 3000000 });
-            if (extractedNumbers.length > 0) {
+            if (extractedNumbers[0] > 0) {
                 $("#centerBlock").html("<h2>Extracted numbers: " + extractedNumbers + "</h2>");
             }
             else {
-                $("#centerBlock").html("<h2>No extracted numbers</h2>");
+                $("#centerBlock").html("<h2>Numbers yet to be extracted</h2>");
             }
         });
     }

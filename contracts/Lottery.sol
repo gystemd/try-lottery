@@ -5,7 +5,7 @@ interface NFT {
     function mint(
         address addr,
         string memory description,
-        uint class
+        uint256 class
     ) external returns (uint256);
 
     function transferFrom(
@@ -18,6 +18,13 @@ interface NFT {
         external
         view
         returns (string memory);
+
+    function getNFTFromAddress(address owner)
+        external
+        view
+        returns (string[] memory);
+
+    function addNFTtoAddress(address _address, uint256 _tokenId) external;
 }
 
 contract Lottery {
@@ -36,7 +43,7 @@ contract Lottery {
 
     event RoundStarted();
     event Winner(address winner, uint256 id);
-    event ExtractedNumbers(uint[6] _numbers);
+    event ExtractedNumbers(uint256[6] _numbers);
 
     //used to map an nft to a class of the lottery
     mapping(uint256 => uint256) private classes;
@@ -50,7 +57,6 @@ contract Lottery {
     uint256 public duration;
     uint256 public price;
     uint256 public extractedPowerBall;
-
 
     address[] private participants;
     uint256[6] public extractedNumbers;
@@ -89,7 +95,7 @@ contract Lottery {
 
         isRoundStarted = true;
         initialBlock = block.number;
-        for(uint256 i = 0; i < participants.length; i++){
+        for (uint256 i = 0; i < participants.length; i++) {
             delete ticket_map[participants[i]];
         }
         delete participants;
@@ -170,7 +176,7 @@ contract Lottery {
             extractedNumber = (uint256(rand) % 69) + 1;
             if (!picked[extractedNumber - 1]) {
                 // Not already extracted, this is a winning number
-                extractedNumbers[j]=extractedNumber;
+                extractedNumbers[j] = extractedNumber;
                 picked[extractedNumber - 1] = true;
             } else {
                 // number already extracted. Retry.
@@ -178,7 +184,7 @@ contract Lottery {
             }
             bhash = bhash ^ rand; // xor to generate another random value
         }
-        extractedNumbers[5]=(uint256(rand) % 26) + 1; //powerball
+        extractedNumbers[5] = (uint256(rand) % 26) + 1; //powerball
         emit ExtractedNumbers(extractedNumbers);
         givePrizes();
     }
@@ -255,13 +261,13 @@ contract Lottery {
         if (classes[classNumber] == 0) {
             //prizes for that class are finished, need to generate a new one
             uint256 tokenId = nft.mint(winner, "NewNFT", classNumber);
-            nft_map[winner].push(tokenId);
+            nft.addNFTtoAddress(winner, tokenId);
             emit Winner(winner, tokenId);
         } else {
             uint256 tokenId = classes[classNumber];
-            nft_map[winner].push(tokenId);
-            classes[classNumber] = 0;
+            nft.addNFTtoAddress(winner, tokenId);
             nft.transferFrom(address(this), winner, tokenId);
+            classes[classNumber] = 0;
             emit Winner(winner, tokenId);
         }
     }
@@ -308,19 +314,10 @@ contract Lottery {
     }
 
     function getNFTwon() public view returns (string[] memory) {
-        string[] memory descriptions_ = new string[](
-            nft_map[msg.sender].length
-        );
-        uint256[] memory nft_list = nft_map[msg.sender];
-        for (uint256 i = 0; i < nft_list.length; i++) {
-            string memory a = nft.getDescription(nft_list[i]);
-            descriptions_[i] = a;
-        }
-        return descriptions_;
+        return nft.getNFTFromAddress(msg.sender);
     }
 
     function getExtractedNumbers() public view returns (uint256[6] memory) {
         return extractedNumbers;
     }
-
 }
