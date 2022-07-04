@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+
+\usepackage{sectsty}
+\usepackage{graphicx}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\title{ Title}
+\author{ Author }
+\date{\today}
+
+\begin{document}
+\maketitle	
+\pagebreak
+
+% Optional TOC
+% \tableofcontents
+% \pagebreak
+
+%--Paper--
+
+\section{Section 1}
+
+Lorem Impsum
+
+
+\pagebreak
+\section{Functionalities}
+\subsection{Operator functionalities}
+All the functionalities of the operators are implemented in the file lottery\_manager.js.
+The lottery can be managed from the page lottery\_manager.html.
+Here the interface will change accordingly to the current state of the lottery:
+\begin{itemize}
+
+\item If there is not an ongoing round, the button "Start Round" will be enabled.
+\item If there is an active round, then the interface will show the number of remaining blocks to pass.
+\item If the round is not active, then a "Draw numbers" button will appear.
+
+\end{itemize}
+\subsubsection{Creating a new lottery}
+With the button "Create Lottery" is possible to create a new lottery. However, in order to perform this operation,
+the previous round must be finished.
+\subsubsection{Closing the lottery}
+With the button "Close Lottery" is possible to close the current lottery. Once a lottery has been deactivated,
+in the page it will be shown only option to create a new lottery.
+\subsection{Tickets}
+The page buy.html is used to buy new tickets and show the ones previously bought.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{ticket.png}
+\caption{Buy tickets}
+\label{fig:buy}
+\end{figure}
+
+\subsection{NFTs}
+\subsubsection{Prizes}
+The page prizes.html is used to show the prizes of the current round.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{prizes.png}
+\caption{Prizes}
+\label{fig:prizes}
+\end{figure}
+
+\subsubsection{NFTs won}
+The page nft.html is used to show the NFTs won by the user. It uses the
+same format as the page for prizes as previously shown.
+%--/Paper--
+\section{Events}
+When an events is triggered, a toast message will be shown on the bottom right corner of the screen
+with the related event.
+the events managed by the lottery are:
+\begin{itemize}
+\item The creation of a new lottery
+\item The start of a new round
+\item The extraction of the numbers
+\item The winning of an NFT
+\end{itemize}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{event_numbers.png}
+\caption{An example of toast to represent an event}
+\label{fig:events}
+
+\end{figure}
+\end{document}
