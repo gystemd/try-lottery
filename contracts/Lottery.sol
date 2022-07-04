@@ -250,7 +250,7 @@ contract Lottery {
         require(!isLotteryDeactivated);
         require(msg.sender == operator);
         isLotteryDeactivated = true;
-
+        isRoundStarted = false;
         //refund all the tickets
         for (uint256 i = 0; i < participants.length; i++) {
             Ticket[] memory tickets = ticket_map[participants[i]];

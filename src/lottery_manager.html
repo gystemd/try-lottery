@@ -105,19 +105,19 @@
       </div>
       <div class="row pt-3">
         <div class="col-sm-12 my-auto d-flex justify-content-center">
-          <button onclick="App.createNewLottery()" type="button" class="btn btn-success">CREATE NEW LOTTERY</button>
+          <button id="createNewLottery" type="button" class="btn btn-success">CREATE NEW LOTTERY</button>
         </div>
       </div>
       <div class="row pt-3">
         <div class="col-sm-12 my-auto d-flex justify-content-center">
-          <button id="closeLottery" onclick="App.closeLottery()" type="button" class="btn btn-danger">
+          <button id="closeLottery"  type="button" class="btn btn-danger">
             CLOSE LOTTERY
           </button>
         </div>
       </div>
       <div class="row pt-5">
         <div id="centerBlock" class="col-sm-12 my-auto d-flex justify-content-center">
-          <button type="button" class="btn btn-danger"></button>
+          
         </div>
       </div>
     </div>
@@ -137,6 +137,6 @@
     <script src="./dist/web3.min.js"></script>
     <script src="./dist/truffle-contract.js"></script>
     <!-- App -->
-    <script src="./js/lottery_manager.js"></script>
+    <script type="module" src="./js/lottery_manager.js"></script>
   </body>
 </html>
