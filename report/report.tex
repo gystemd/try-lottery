@@ -2,7 +2,7 @@
 
 \usepackage{sectsty}
 \usepackage{graphicx}
-
+\usepackage{listings}
 % Margins
 \topmargin=-0.45in
 \evensidemargin=0in
@@ -11,8 +11,8 @@
 \textheight=9.0in
 \headsep=0.25in
 
-\title{ Title}
-\author{ Author }
+\title{Final project report}
+\author{ Giulio Piva}
 \date{\today}
 
 \begin{document}
@@ -23,6 +23,30 @@
 % \pagebreak
 
 %--Paper--
+\section{Starting the application}
+The steps I use to start the application are the following:
+\begin{itemize}
+\item Launch ganache with the -m option:
+
+\begin{lstlisting}[frame=single]
+ganache -m "mountain magic oven first used asthma
+rookie green bonus giant ability welcome"
+\end{lstlisting}
+\item Import the private keys of Ganache into Metamask
+\item Deploy the application
+\begin{lstlisting}[frame=single]
+truffle migrate --reset --network development
+\end{lstlisting}
+\item Run the lite-server
+\begin{lstlisting}[frame=single]
+npm run dev
+\end{lstlisting}
+\end{itemize}
+Starting \textit{ganache} with the -m option allows to avoid to repeat the import
+of the private keys every time ganache is restarted.
+Therefore, once a private key has been imported once, it is not necessary to import it again.
+However, when restarting ganache, also the transactions of the account in metamask must be resetted,
+otherwise it will produce errors due to unsynchronized state.
 
 \section{Functionalities}
 \subsection{Operator functionalities}
@@ -36,8 +60,9 @@ Here the interface will change dinamically, according to the current state of th
 \item If the round is not active, then a "Draw numbers" button will appear.
 \begin{figure}
 \includegraphics[width=\textwidth]{lottery.png}
-
+\caption{Interface of the lottery manager}
 \end{figure}
+
 \end{itemize}
 \subsubsection*{Creating a new lottery}
 With the button "Create Lottery" is possible to create a new lottery. However, in order to perform this operation,
@@ -45,11 +70,13 @@ the previous round must be finished.
 
 \subsubsection*{Closing the lottery}
 With the button "Close Lottery" is possible to close the current lottery. Once a lottery has been deactivated,
-in the page it will be shown only option to create a new lottery.
+ a warning message will be shown.
 
 \subsection{Tickets}
 The page buy.html is used to buy new tickets and show those previously bought. If an error occur when the user tries to buy a
 ticket (e.g numbers constraint not respected, Round not active, etc...), a red alert will appear above to flag the error.
+The cost of the ticket is retrieved automatically through the smart contract, so the user doesn't need to specify it and
+only need to confirm the transaction with metamask.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.8\textwidth]{ticket.png}
@@ -69,7 +96,7 @@ The page prizes.html is used to show the prizes of the current round.
 
 \subsubsection*{NFTs won}
 The page nft.html is used to show the NFTs won by the user. It uses the
-same format as the page for prizes, as previously showed.
+same format as the page for prizes.
 %--/Paper--
 \section{Events}
 When an events is triggered, a toast message will be shown on the bottom right corner of the screen
@@ -96,15 +123,23 @@ I created a new contract to manage the creation and migration of new lotteries f
 UI. It is called LotteryFactory. It has two main functions: CreateLottery and getLotteryAddress.
 The first one is used to create a new lottery and the second one is used to get the address of the
 the currently active lottery, which will be used to instantiate a TruffleContract in the JavaScript
-code to interact with the lottery. The Lottery factory has to be deployed with
+code to interact with the lottery. The LotteryFactory has to be deployed with
 the Truffle migration script, which it will also create the first lottery.
 \subsection{Core.js}
 In the file core.js, I implemented the functions to initialize all the lottery machinery.
-The function init returns an object with all the necessary object instantiated to interact
-with the blockchain. The file is imported in every other necessary file, so I could avoid
+The function init returns an object which will be used to interact
+with the blockchain. This module is imported in every other file, so I could avoid
 code duplication.
+\subsection{Files}
+For every html page, I created a JavaScript file with the necessary functions to implement
+the functionalities of that specific page. I preferred
+to separate the functionalities per file to have a better structured code
+and keep related methods together.
+
 \subsection{GUI}
-For the implementation of the GUI, I used the Bootstrap CSS framework.
+I implemented the guy using the Bootstrap CSS framework and JQuery. I added a navbar to access the different pages of application.
+\textit{\textbf{Note}}: The link to the Operator dashboard has been added to the navbar just for simplicity but
+in the real application that page would be only accessible to the operator.
 \subsection{Test}
 To facilitate the testing of the application, I automated the buy of the tickets in the migration script
 (1\_initial\_migration.js). Then the operator can immediately extract the numbers and the prizes are given. One
@@ -112,4 +147,18 @@ can see the NFT won in the nft.html page. This avoid the burden of buying ticket
 every time from scratch to test the lottery. However, for the delivery of the project
 I commented those lines, so the lottery will start from scratch.
 
+\section{Improvements of the Lottery contract}
+I applied some modifications and corrections to the smart contract delivered in the final term.
+\subsection*{Tickets}
+The tickets are now represented with a mapping (address $=>$ Ticket[]). This has been done to
+better support the retrieval of tickets that belong to a specific user and show them in the buy.html page.
+\subsection*{Change}
+Now a change is sent back to the buyer when the the value sent is more than the cost of the ticket.
+\subsection*{Initial minting}
+The initial minting  of the NFTs is now made automatically in the constructor. Previously, it had to be done manually.
+\subsection*{Drawing numbers}
+I corrected the bug where the numbers could be extracted before all the blocks passed.
+I added a require to check this condition to permit the drawing of the numbers.
+
 \end{document}
+

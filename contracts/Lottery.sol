@@ -38,8 +38,7 @@ contract Lottery {
     }
 
     address operator;
-    address payable recipient =
-        payable(0xdD870fA1b7C4700F2BD7f44238821C26f7392148);
+    address payable recipient;
 
     event RoundStarted();
     event Winner(address winner, uint256 id);
@@ -51,6 +50,7 @@ contract Lottery {
     mapping(address => uint256[]) public nft_map;
 
     bool public isRoundStarted;
+    bool public isPrizeGiven;
     bool public isLotteryDeactivated;
 
     uint256 private initialBlock;
@@ -65,16 +65,19 @@ contract Lottery {
         uint256 _price,
         uint256 _duration,
         address nft_address,
-        address operator_
+        address operator_,
+        address recipient_
     ) public {
         operator = operator_;
+        recipient = payable(recipient_);
         nft = NFT(nft_address);
         duration = _duration;
         price = _price;
         extractedPowerBall = 0;
         isLotteryDeactivated = false;
         isRoundStarted = false;
-        //
+        isPrizeGiven = false;
+
         classes[0] = mint("NFT 1", 1);
         classes[1] = mint("NFT 2", 2);
         classes[2] = mint("NFT 3", 3);
@@ -248,7 +251,8 @@ contract Lottery {
             }
         }
         isRoundStarted = false;
-        recipient.send(address(this).balance);
+        isPrizeGiven = true;
+        recipient.transfer(address(this).balance);
     }
 
     function closeLottery() public {
@@ -256,11 +260,13 @@ contract Lottery {
         require(msg.sender == operator);
         isLotteryDeactivated = true;
         isRoundStarted = false;
-        //refund all the tickets
-        for (uint256 i = 0; i < participants.length; i++) {
-            Ticket[] memory tickets = ticket_map[participants[i]];
-            for (uint256 j = 0; j < tickets.length; j++) {
-                tickets[i].buyer.send(price);
+        //refund all the tickets only if the prizes haven't been given yet
+        if (!isPrizeGiven) {
+            for (uint256 i = 0; i < participants.length; i++) {
+                Ticket[] memory tickets = ticket_map[participants[i]];
+                for (uint256 j = 0; j < tickets.length; j++) {
+                    tickets[i].buyer.send(price);
+                }
             }
         }
     }

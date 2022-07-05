@@ -5,6 +5,9 @@ function render() {
     $("#tickets").html("");
     App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
         const tickets = await instance.getTickets({ from: App.account });
+        const price = await instance.price();
+            $("#price").html("<h2 class='pl-2'>Price:"+price+" wei</h2>");
+            console.log("price " + price);
 
         for (let i = 0; i < tickets.length; i++) {
             let list = '<ul class="pt-3 list-group list-group-horizontal">';
@@ -15,8 +18,6 @@ function render() {
             list += '</ul>';
             $("#tickets").append(list);
 
-            const price = await instance.price();
-            console.log("price " + price);
         }
 
     });
@@ -40,8 +41,8 @@ function buy_ticket() {
             let price = await instance.price();
             await instance.buy(numbers, { from: App.account, value: price });
         } catch (error) {
-            string = error.toString();
-            result = null;
+            let string = error.toString();
+            let result = null;
             if (string.includes("The round is not started yet")) {
                 result = "The round is not started yet";
             }

@@ -5,7 +5,7 @@ const NFT = artifacts.require("NFT");
 module.exports = async function (deployer, network, accounts) {
   let address = await deployer.deploy(NFT);
   await deployer.deploy(Migrations);
-  let factory = await deployer.deploy(Factory, NFT.address, accounts[0], 15, 1000);
+  let factory = await deployer.deploy(Factory, NFT.address, accounts[0], accounts[2], 15, 1000);
   /*
   let lottery = await factory.getLotteryAddress();
   let instanceLottery = await Contract.at(lottery);
