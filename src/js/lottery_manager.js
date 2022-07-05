@@ -15,19 +15,21 @@ function render() {
         else if (isRoundStarted) {
             const round = await instance.getCurrentBlock();
             const duration = await instance.duration();
-            if (round.toNumber() >= duration.toNumber()) {
 
+            if (round.toNumber() >= duration.toNumber()) {
                 $("#centerBlock").html("<button id='drawNumbers' type='button' class='btn btn-primary' > DRAW NUMBERS</button > ");
                 $("#drawNumbers").click(function () {
                     drawNumbers();
                 });
-
             }
+
             else {
                 $("#centerBlock").html("<h2>" + round + " out of "
                     + duration + " rounds passed </h1>");
             }
+
         }
+
         else { //round not started yet, show the start button
             $("#centerBlock").html("<button id='startRound' type='button' class='btn btn-primary'>START NEW ROUND</button>");
             $("#startRound").click(function () {
@@ -51,8 +53,8 @@ function startNewRound() {
 function drawNumbers() {
     App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
         await instance.drawNumbers({ from: App.account });
+        render();
     });
-    render();
 
 }
 function createNewLottery() {
@@ -60,15 +62,15 @@ function createNewLottery() {
         let rounds = $("#rounds").val();
         let price = $("#price").val();
         await instance.createLottery(price, rounds, { from: App.account });
+        render();
     });
-    render();
 }
 
 function closeLottery() {
     App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
         await instance.closeLottery({ from: App.account });
+        render();
     });
-    render();
 }
 
 

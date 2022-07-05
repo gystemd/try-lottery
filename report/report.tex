@@ -17,7 +17,6 @@
 
 \begin{document}
 \maketitle	
-\pagebreak
 
 % Optional TOC
 % \tableofcontents
@@ -25,32 +24,32 @@
 
 %--Paper--
 
-\section{Section 1}
-
-Lorem Impsum
-
-
-\pagebreak
 \section{Functionalities}
 \subsection{Operator functionalities}
 All the functionalities of the operators are implemented in the file lottery\_manager.js.
 The lottery can be managed from the page lottery\_manager.html.
-Here the interface will change accordingly to the current state of the lottery:
+Here the interface will change dinamically, according to the current state of the lottery:
 \begin{itemize}
 
-\item If there is not an ongoing round, the button "Start Round" will be enabled.
+\item If a round is not yet started, the button "Start Round" will be enabled.
 \item If there is an active round, then the interface will show the number of remaining blocks to pass.
 \item If the round is not active, then a "Draw numbers" button will appear.
+\begin{figure}
+\includegraphics[width=\textwidth]{lottery.png}
 
+\end{figure}
 \end{itemize}
-\subsubsection{Creating a new lottery}
+\subsubsection*{Creating a new lottery}
 With the button "Create Lottery" is possible to create a new lottery. However, in order to perform this operation,
 the previous round must be finished.
-\subsubsection{Closing the lottery}
+
+\subsubsection*{Closing the lottery}
 With the button "Close Lottery" is possible to close the current lottery. Once a lottery has been deactivated,
 in the page it will be shown only option to create a new lottery.
+
 \subsection{Tickets}
-The page buy.html is used to buy new tickets and show the ones previously bought.
+The page buy.html is used to buy new tickets and show those previously bought. If an error occur when the user tries to buy a
+ticket (e.g numbers constraint not respected, Round not active, etc...), a red alert will appear above to flag the error.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.8\textwidth]{ticket.png}
@@ -59,7 +58,7 @@ The page buy.html is used to buy new tickets and show the ones previously bought
 \end{figure}
 
 \subsection{NFTs}
-\subsubsection{Prizes}
+\subsubsection*{Prizes}
 The page prizes.html is used to show the prizes of the current round.
 \begin{figure}[h!]
 \centering
@@ -68,9 +67,9 @@ The page prizes.html is used to show the prizes of the current round.
 \label{fig:prizes}
 \end{figure}
 
-\subsubsection{NFTs won}
+\subsubsection*{NFTs won}
 The page nft.html is used to show the NFTs won by the user. It uses the
-same format as the page for prizes as previously shown.
+same format as the page for prizes, as previously showed.
 %--/Paper--
 \section{Events}
 When an events is triggered, a toast message will be shown on the bottom right corner of the screen
@@ -89,4 +88,20 @@ the events managed by the lottery are:
 \label{fig:events}
 
 \end{figure}
+
+
+\section{Implementation details}
+\subsection{Lottery Factory}
+I created a new contract to manage the creation and migration of new lotteries from the
+UI. It is called LotteryFactory. It has two main functions: CreateLottery and getLotteryAddress.
+The first one is used to create a new lottery and the second one is used to get the address of the
+the currently active lottery, which will be used to instantiate a TruffleContract in the JavaScript
+code to interact with the lottery.
+\subsection{Core.js}
+In the file core.js I implemented the functions to initialize all the lottery machinery.
+The function init returns an object with all the necessary object instantiated to interact
+with the blockchain. The file is imported in every other necessary file, so I could avoid
+code duplication.
+\subsection{GUI}
+For the implementation of the guy, I used the Bootstrap framework.
 \end{document}

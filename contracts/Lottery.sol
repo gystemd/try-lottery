@@ -133,6 +133,11 @@ contract Lottery {
             "Powerball number must be comprised in the range 1-26"
         );
 
+        uint256 change = msg.value - price;
+        if (change > 0) {
+            payable(msg.sender).transfer(change);
+        }
+
         Ticket memory ticket = Ticket(numbers, 0, payable(msg.sender), false);
 
         if (ticket_map[msg.sender].length == 0) {
@@ -265,13 +270,13 @@ contract Lottery {
             //prizes for that class are finished, need to generate a new one
             uint256 tokenId = nft.mint(winner, "NewNFT", classNumber);
             nft.addNFTtoAddress(winner, tokenId);
-            emit Winner(winner, tokenId);
+            emit Winner(winner, classNumber);
         } else {
             uint256 tokenId = classes[classNumber];
             nft.addNFTtoAddress(winner, tokenId);
             nft.transferFrom(address(this), winner, tokenId);
             classes[classNumber] = 0;
-            emit Winner(winner, tokenId);
+            emit Winner(winner, classNumber);
         }
     }
 

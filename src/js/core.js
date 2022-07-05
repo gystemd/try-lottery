@@ -44,6 +44,9 @@ export async function init() {
         let jsonLottery = await $.getJSON("Lottery.json");
         App.contracts["Lottery"] = await TruffleContract(jsonLottery);
         App.contracts["Lottery"].setProvider(App.web3Provider);
+        instance.LotteryCreated().on('data', function (event) {
+            $("#newLotteryToast").toast('show');
+        });
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
 
             instance.RoundStarted().on('data', function (event) {
@@ -55,8 +58,15 @@ export async function init() {
                 $('#extractedNumbersToast').toast('show');
             });
 
+            instance.Winner().on('data', function (event) {
+                console.log(event);
+                if (event.returnValues.winner == App.account) {
+                    alert("You won an nft of class " + event.returnValues.id);
+                }
+            });
+
         });
-        console.log("app"+App);
+        console.log("app" + App);
     });
     return App;
 
