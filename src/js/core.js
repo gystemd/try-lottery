@@ -44,9 +44,12 @@ export async function init() {
         let jsonLottery = await $.getJSON("Lottery.json");
         App.contracts["Lottery"] = await TruffleContract(jsonLottery);
         App.contracts["Lottery"].setProvider(App.web3Provider);
+
+        //event of creation produced by the factory
         instance.LotteryCreated().on('data', function (event) {
             $("#newLotteryToast").toast('show');
         });
+
         App.contracts["Lottery"].at(App.lotteryAddress).then(async (instance) => {
 
             instance.RoundStarted().on('data', function (event) {

@@ -96,12 +96,20 @@ I created a new contract to manage the creation and migration of new lotteries f
 UI. It is called LotteryFactory. It has two main functions: CreateLottery and getLotteryAddress.
 The first one is used to create a new lottery and the second one is used to get the address of the
 the currently active lottery, which will be used to instantiate a TruffleContract in the JavaScript
-code to interact with the lottery.
+code to interact with the lottery. The Lottery factory has to be deployed with
+the Truffle migration script, which it will also create the first lottery.
 \subsection{Core.js}
-In the file core.js I implemented the functions to initialize all the lottery machinery.
+In the file core.js, I implemented the functions to initialize all the lottery machinery.
 The function init returns an object with all the necessary object instantiated to interact
 with the blockchain. The file is imported in every other necessary file, so I could avoid
 code duplication.
 \subsection{GUI}
-For the implementation of the guy, I used the Bootstrap framework.
+For the implementation of the GUI, I used the Bootstrap CSS framework.
+\subsection{Test}
+To facilitate the testing of the application, I automated the buy of the tickets in the migration script
+(1\_initial\_migration.js). Then the operator can immediately extract the numbers and the prizes are given. One
+can see the NFT won in the nft.html page. This avoid the burden of buying tickets
+every time from scratch to test the lottery. However, for the delivery of the project
+I commented those lines, so the lottery will start from scratch.
+
 \end{document}

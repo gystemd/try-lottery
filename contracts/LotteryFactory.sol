@@ -4,8 +4,8 @@ contract LotteryFactory {
     Lottery public lottery;
     address NFTAddress;
     event LotteryCreated();
-    constructor(address nft_address, address operator) public{
-        lottery = new Lottery(1000, 6, nft_address, operator);
+    constructor(address nft_address, address operator, uint round, uint price) public{
+        lottery = new Lottery(price, round, nft_address, operator);
         NFTAddress = nft_address;
     }
 
