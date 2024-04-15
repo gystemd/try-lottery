@@ -1,7 +1,7 @@
 {
-  "name": "dapptutorial2022",
+  "name": "trylottery",
   "version": "1.0.0",
-  "description": "Tutorial to create an Ethereum DApp",
+  "description": "TRY: a nfT lotteRY",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
     "@truffle/contract": "^4.5.7",
     "@truffle/migrate": "^3.2.85",
     "lite-server": "^2.6.1",

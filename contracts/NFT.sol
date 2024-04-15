@@ -1,11 +1,9 @@
 pragma solidity >=0.6.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract NFT is ERC721 {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    uint256 private _tokenIds;
     mapping(uint256 => string) public descriptions;
     mapping(uint256 => uint256) rank;
     mapping(address => uint256[]) address_nft;
@@ -17,8 +15,8 @@ contract NFT is ERC721 {
         string memory description,
         uint256 rank_
     ) public returns (uint256) {
-        _tokenIds.increment();
-        uint256 tokenId = _tokenIds.current();
+        _tokenIds+=1;
+        uint256 tokenId = _tokenIds;
         _mint(owner, tokenId);
         descriptions[tokenId] = description;
         rank[tokenId] = rank_;
